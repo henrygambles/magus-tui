@@ -1,0 +1,23 @@
+{
+  "name": "Powerpuff",
+  "base": {
+    "fg": "BrightMagenta",
+    "bg": "Black"
+  },
+  "accent": {
+    "fg": "BrightCyan",
+    "bg": "Black"
+  },
+  "hot": {
+    "fg": "BrightYellow",
+    "bg": "Black"
+  },
+  "status": {
+    "fg": "BrightMagenta",
+    "bg": "Black"
+  },
+  "disabled": {
+    "fg": "Gray",
+    "bg": "Black"
+  }
+}

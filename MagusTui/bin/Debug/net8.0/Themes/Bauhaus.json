@@ -1,0 +1,23 @@
+{
+  "name": "Bauhaus",
+  "base": {
+    "fg": "BrightYellow",
+    "bg": "Black"
+  },
+  "accent": {
+    "fg": "BrightRed",
+    "bg": "Black"
+  },
+  "hot": {
+    "fg": "White",
+    "bg": "Black"
+  },
+  "status": {
+    "fg": "BrightYellow",
+    "bg": "Black"
+  },
+  "disabled": {
+    "fg": "Gray",
+    "bg": "Black"
+  }
+}

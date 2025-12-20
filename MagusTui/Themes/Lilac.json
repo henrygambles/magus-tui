@@ -1,0 +1,23 @@
+{
+  "name": "Lilac",
+  "base": {
+    "fg": "BrightMagenta",
+    "bg": "Black"
+  },
+  "accent": {
+    "fg": "Magenta",
+    "bg": "Black"
+  },
+  "hot": {
+    "fg": "BrightCyan",
+    "bg": "Black"
+  },
+  "status": {
+    "fg": "BrightMagenta",
+    "bg": "Black"
+  },
+  "disabled": {
+    "fg": "Gray",
+    "bg": "Black"
+  }
+}

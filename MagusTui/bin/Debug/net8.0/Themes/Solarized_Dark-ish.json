@@ -1,0 +1,23 @@
+{
+  "name": "Solarized Dark-ish",
+  "base": {
+    "fg": "Cyan",
+    "bg": "Black"
+  },
+  "accent": {
+    "fg": "BrightBlue",
+    "bg": "Black"
+  },
+  "hot": {
+    "fg": "BrightYellow",
+    "bg": "Black"
+  },
+  "status": {
+    "fg": "Cyan",
+    "bg": "Black"
+  },
+  "disabled": {
+    "fg": "Gray",
+    "bg": "Black"
+  }
+}

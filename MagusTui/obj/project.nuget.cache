@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "ZtHcTtn76jA=",
+  "success": true,
+  "projectFilePath": "/Users/henry/Code/MagusTui_v0.2_TerminalGui_FeatureRich/MagusTui/MagusTui.csproj",
+  "expectedPackageFiles": [
+    "/Users/henry/.nuget/packages/nstack.core/1.1.1/nstack.core.1.1.1.nupkg.sha512",
+    "/Users/henry/.nuget/packages/system.codedom/8.0.0/system.codedom.8.0.0.nupkg.sha512",
+    "/Users/henry/.nuget/packages/system.management/8.0.0/system.management.8.0.0.nupkg.sha512",
+    "/Users/henry/.nuget/packages/system.valuetuple/4.5.0/system.valuetuple.4.5.0.nupkg.sha512",
+    "/Users/henry/.nuget/packages/terminal.gui/1.16.0/terminal.gui.1.16.0.nupkg.sha512",
+    "/Users/henry/.nuget/packages/microsoft.netcore.app.ref/8.0.20/microsoft.netcore.app.ref.8.0.20.nupkg.sha512",
+    "/Users/henry/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.20/microsoft.aspnetcore.app.ref.8.0.20.nupkg.sha512",
+    "/Users/henry/.nuget/packages/microsoft.netcore.app.host.osx-arm64/8.0.20/microsoft.netcore.app.host.osx-arm64.8.0.20.nupkg.sha512"
+  ],
+  "logs": []
+}
