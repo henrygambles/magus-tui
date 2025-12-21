@@ -1,5 +1,6 @@
-
 using Terminal.Gui;
+using MagusTui.Config;
+using MagusTui.Models;
 
 namespace MagusTui;
 
@@ -8,87 +9,151 @@ public sealed class ChatPane
     private readonly LogPane _logs;
     private readonly BackendManager _backend;
     private readonly ModeManager _modes;
+    private readonly MemoryStore _memory;
+    private readonly MagusConfig _config;
+    private string _persona;
+    private string _personaName;
 
-    private readonly TextView _history;
+    private readonly List<ChatMessage> _conversation = new(); // excludes system
+
+    private readonly TextView _output;
     private readonly TextField _input;
+    private readonly Button _send;
 
-    public View View { get; }
+    public View Root { get; }
+    public View View => Root;
+    public void FocusInput() => _input.SetFocus();
 
-    public ChatPane(LogPane logs, BackendManager backend, ModeManager modes)
+    public ChatPane(LogPane logs, BackendManager backend, ModeManager modes, MemoryStore memory, MagusConfig config, string personaName, string personaText)
     {
         _logs = logs;
         _backend = backend;
         _modes = modes;
+        _memory = memory;
+        _config = config;
+        _personaName = personaName;
+        _persona = personaText;
 
-        var root = new View()
-        {
-            Width = Dim.Fill(),
-            Height = Dim.Fill()
-        };
+        Root = new FrameView("Chat") { X = 0, Y = 0, Width = Dim.Fill(), Height = Dim.Fill() };
 
-        _history = new TextView()
+        _output = new TextView
         {
-            X = 0, Y = 0,
+            X = 0,
+            Y = 0,
             Width = Dim.Fill(),
-            Height = Dim.Fill() - 2,
+            Height = Dim.Fill() - 3,
             ReadOnly = true,
             WordWrap = true
         };
 
-        _input = new TextField("")
+        _input = new TextField
         {
-            X = 0, Y = Pos.Bottom(_history),
-            Width = Dim.Fill(),
+            X = 0,
+            Y = Pos.Bottom(_output) + 1,
+            Width = Dim.Fill() - 12,
             Height = 1
         };
 
-        var hint = new Label("Enter to send • F2 mode • F3 backend • F4 theme • Ctrl+P palette")
+        _send = new Button("Send")
         {
-            X = 0, Y = Pos.Bottom(_input),
-            Width = Dim.Fill()
+            X = Pos.Right(_input) + 1,
+            Y = Pos.Top(_input),
+            Width = 10,
+            Height = 1,
+            IsDefault = true
         };
 
-        _input.KeyDown += e =>
+        _send.Clicked += () => _ = SendAsync();
+
+        _input.KeyPress += args =>
         {
-            if (e.KeyEvent.Key == Key.Enter)
+            if (args.KeyEvent.Key == Key.Enter)
             {
-                e.Handled = true;
-                Send();
+                args.Handled = true;
+                _ = SendAsync();
             }
         };
 
-        root.Add(_history, _input, hint);
-        View = root;
+        Root.Add(_output, _input, _send);
 
-        Append("Tara", "Welcome to Magus TUI.");
-        Append("Tip", "Use F2 to switch modes (Explore/Build/Reflect).");
+        // Load memory and greet
+        foreach (var m in _memory.LoadRecent(_config.MemoryMaxMessages))
+            _conversation.Add(m);
+
+        if (_conversation.Count == 0)
+        {
+            Append("Tara", "Welcome to Magus TUI.\nTip: Use F2 to switch modes (Explore/Build/Reflect).\n");
+        }
+        else
+        {
+            foreach (var m in _conversation)
+                Append(m.Role == "assistant" ? "Tara" : "You", m.Content);
+        }
     }
 
-    private void Send()
+    private async Task SendAsync()
     {
-        var text = _input.Text?.ToString() ?? "";
+        var text = (_input.Text?.ToString() ?? "").Trim();
         if (string.IsNullOrWhiteSpace(text)) return;
 
-        Append("You", text.Trim());
-
-        // Offline demo response
-        var response = _backend.CurrentName.Contains("Offline", StringComparison.OrdinalIgnoreCase)
-            ? $"(offline) I received that in {_modes.CurrentName} mode."
-            : $"({ _backend.CurrentName.ToLowerInvariant() }) I received that in {_modes.CurrentName} mode.";
-
-        Append("Tara", response);
-
-        _logs.Add($"Chat: {text.Trim()}");
         _input.Text = "";
+        Append("You", text);
+
+        var userMsg = new ChatMessage("user", text);
+        _conversation.Add(userMsg);
+        _memory.Append(userMsg);
+
+        _logs.Add($"Chat: {text}");
+        _logs.Add($"Mode: {_modes.Current}");
+        _logs.Add($"Backend: {_backend.CurrentName}");
+
+        // Build prompt
+        var window = _config.MemoryMaxMessages;
+        var recent = _conversation.TakeLast(Math.Max(1, window)).ToList();
+        var messages = new List<ChatMessage>
+        {
+            new("system", _persona + "\n\nCurrent mode: " + _modes.Current)
+        };
+        messages.AddRange(recent);
+
+        try
+        {
+            SetBusy(true);
+            var reply = await _backend.ChatAsync(messages, CancellationToken.None);
+            var assistantMsg = new ChatMessage("assistant", reply);
+            _conversation.Add(assistantMsg);
+            _memory.Append(assistantMsg);
+            Append("Tara", reply);
+        }
+        catch (Exception ex)
+        {
+            Append("Tara", $"Hmm, something went wrong talking to {_backend.CurrentName}: {ex.Message}");
+            _logs.Add($"Error: {ex.Message}");
+        }
+        finally
+        {
+            SetBusy(false);
+        }
     }
 
     private void Append(string who, string text)
     {
-        var current = _history.Text?.ToString() ?? "";
-        var next = string.IsNullOrWhiteSpace(current)
-            ? $"{who}: {text}"
-            : $"{current}{Environment.NewLine}{Environment.NewLine}{who}: {text}";
-        _history.Text = next;
-        _history.MoveEnd();
+        var line = $"{who}: {text}";
+        if (!line.EndsWith("\n")) line += "\n";
+        _output.Text = (_output.Text?.ToString() ?? "") + line;
+        _output.MoveEnd();
+    }
+
+    private void SetBusy(bool busy)
+    {
+        _send.Enabled = !busy;
+        _input.Enabled = !busy;
+    }
+
+    public void SetPersona(string personaName, string personaText)
+    {
+        _personaName = personaName;
+        _persona = personaText;
+        Append("Tara", $"Persona switched to {_personaName}.");
     }
 }

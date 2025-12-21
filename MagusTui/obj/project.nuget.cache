@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ZtHcTtn76jA=",
+  "dgSpecHash": "6r8Re2L9Feo=",
   "success": true,
-  "projectFilePath": "/Users/henry/Code/MagusTui_v0.2_TerminalGui_FeatureRich/MagusTui/MagusTui.csproj",
+  "projectFilePath": "/Users/henry/Code/MagusTui/MagusTui/MagusTui.csproj",
   "expectedPackageFiles": [
     "/Users/henry/.nuget/packages/nstack.core/1.1.1/nstack.core.1.1.1.nupkg.sha512",
     "/Users/henry/.nuget/packages/system.codedom/8.0.0/system.codedom.8.0.0.nupkg.sha512",

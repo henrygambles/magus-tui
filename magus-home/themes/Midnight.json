@@ -1,0 +1,23 @@
+{
+  "name": "Midnight",
+  "base": {
+    "fg": "White",
+    "bg": "Black"
+  },
+  "accent": {
+    "fg": "Cyan",
+    "bg": "Black"
+  },
+  "hot": {
+    "fg": "BrightCyan",
+    "bg": "Black"
+  },
+  "status": {
+    "fg": "White",
+    "bg": "Black"
+  },
+  "disabled": {
+    "fg": "Gray",
+    "bg": "Black"
+  }
+}

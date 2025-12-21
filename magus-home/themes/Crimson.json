@@ -1,0 +1,23 @@
+{
+  "name": "Crimson",
+  "base": {
+    "fg": "BrightRed",
+    "bg": "Black"
+  },
+  "accent": {
+    "fg": "White",
+    "bg": "Black"
+  },
+  "hot": {
+    "fg": "BrightYellow",
+    "bg": "Black"
+  },
+  "status": {
+    "fg": "BrightRed",
+    "bg": "Black"
+  },
+  "disabled": {
+    "fg": "Gray",
+    "bg": "Black"
+  }
+}

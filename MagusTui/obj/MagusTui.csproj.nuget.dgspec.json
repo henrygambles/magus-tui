@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/henry/Code/MagusTui_v0.2_TerminalGui_FeatureRich/MagusTui/MagusTui.csproj": {}
+    "/Users/henry/Code/MagusTui/MagusTui/MagusTui.csproj": {}
   },
   "projects": {
-    "/Users/henry/Code/MagusTui_v0.2_TerminalGui_FeatureRich/MagusTui/MagusTui.csproj": {
+    "/Users/henry/Code/MagusTui/MagusTui/MagusTui.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/henry/Code/MagusTui_v0.2_TerminalGui_FeatureRich/MagusTui/MagusTui.csproj",
+        "projectUniqueName": "/Users/henry/Code/MagusTui/MagusTui/MagusTui.csproj",
         "projectName": "MagusTui",
-        "projectPath": "/Users/henry/Code/MagusTui_v0.2_TerminalGui_FeatureRich/MagusTui/MagusTui.csproj",
+        "projectPath": "/Users/henry/Code/MagusTui/MagusTui/MagusTui.csproj",
         "packagesPath": "/Users/henry/.nuget/packages/",
-        "outputPath": "/Users/henry/Code/MagusTui_v0.2_TerminalGui_FeatureRich/MagusTui/obj/",
+        "outputPath": "/Users/henry/Code/MagusTui/MagusTui/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/henry/.nuget/NuGet/NuGet.Config"

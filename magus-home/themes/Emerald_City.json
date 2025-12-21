@@ -1,0 +1,23 @@
+{
+  "name": "Emerald City",
+  "base": {
+    "fg": "BrightGreen",
+    "bg": "Black"
+  },
+  "accent": {
+    "fg": "Green",
+    "bg": "Black"
+  },
+  "hot": {
+    "fg": "BrightYellow",
+    "bg": "Black"
+  },
+  "status": {
+    "fg": "BrightGreen",
+    "bg": "Black"
+  },
+  "disabled": {
+    "fg": "Gray",
+    "bg": "Black"
+  }
+}

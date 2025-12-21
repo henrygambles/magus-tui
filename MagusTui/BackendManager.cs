@@ -1,26 +1,50 @@
+using MagusTui.Backends;
+using MagusTui.Config;
+using MagusTui.Models;
 
 namespace MagusTui;
 
-public sealed class BackendManager
+public class BackendManager
 {
-    private readonly List<string> _names = new()
+    private readonly List<IChatBackend> _backends = new();
+    private int _index;
+
+    public BackendManager(MagusConfig config)
     {
-        "Local (Ollama)",
-        "Local (LM Studio)",
-        "OpenAI (API)",
-        "Offline"
-    };
+        // Each backend gets its own HttpClient because they need different base addresses/headers.
+        _backends.Add(new OllamaBackend(new HttpClient(), config.OllamaBaseUrl, config.OllamaModel));
+        _backends.Add(new OpenAICompatibleBackend(new HttpClient(), config.LmStudioBaseUrl, config.LmStudioModel, name: "Local (LM Studio)", apiKey: null));
 
-    private int _index = 0;
+        var cloudApiKey = string.IsNullOrWhiteSpace(config.CloudApiKeyEnv)
+            ? null
+            : Environment.GetEnvironmentVariable(config.CloudApiKeyEnv);
+        _backends.Add(new OpenAICompatibleBackend(new HttpClient(), config.CloudBaseUrl, config.CloudModel, name: "Cloud (API)", apiKey: cloudApiKey));
+        _backends.Add(new OfflineBackend());
 
-    public IReadOnlyList<string> Names => _names;
-    public string CurrentName => _names[_index];
+        _index = 0;
+    }
 
-    public void Cycle() => _index = (_index + 1) % _names.Count;
+    public IChatBackend Current => _backends[_index];
+    public string CurrentName => Current.Name;
+    public IReadOnlyList<string> Names => _backends.Select(b => b.Name).ToList();
 
-    public void Set(string name)
+    public void Next()
     {
-        var idx = _names.FindIndex(n => n.Equals(name, StringComparison.OrdinalIgnoreCase));
+        _index = (_index + 1) % _backends.Count;
+    }
+
+    public void Cycle() => Next();
+
+    public IReadOnlyList<IChatBackend> All => _backends;
+
+    public Task<string> ChatAsync(IReadOnlyList<ChatMessage> messages, CancellationToken ct) =>
+        Current.ChatAsync(messages, ct);
+
+    public void Set(string name) => SelectByName(name);
+
+    public void SelectByName(string name)
+    {
+        var idx = _backends.FindIndex(b => b.Name == name);
         if (idx >= 0) _index = idx;
     }
 }

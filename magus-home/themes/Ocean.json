@@ -1,0 +1,23 @@
+{
+  "name": "Ocean",
+  "base": {
+    "fg": "BrightBlue",
+    "bg": "Black"
+  },
+  "accent": {
+    "fg": "Cyan",
+    "bg": "Black"
+  },
+  "hot": {
+    "fg": "BrightCyan",
+    "bg": "Black"
+  },
+  "status": {
+    "fg": "BrightBlue",
+    "bg": "Black"
+  },
+  "disabled": {
+    "fg": "Gray",
+    "bg": "Black"
+  }
+}

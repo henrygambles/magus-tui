@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MagusTui")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+65fe0a0e65845e5935ab69646030330b815f864e")]
 [assembly: System.Reflection.AssemblyProductAttribute("MagusTui")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MagusTui")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -9,6 +9,7 @@ public static class MenuFactory
         ThemeManager themes,
         BackendManager backend,
         ModeManager modes,
+        IEnumerable<MenuItem> personas,
         Action onThemeChanged,
         Action onBackendChanged,
         Action onModeChanged,
@@ -30,6 +31,7 @@ public static class MenuFactory
             new MenuBarItem("_Backend", backendItems),
             new MenuBarItem("_Themes", themeItems),
             new MenuBarItem("_Mode", modeItems),
+            new MenuBarItem("_Persona", personas.ToArray()),
             new MenuBarItem("_Help", new MenuItem[] {
                 new MenuItem("_About", "", () => MessageBox.Query(60, 10, "About", "MagusTui v0.2 — local-first terminal workspace.", "OK")),
             }),

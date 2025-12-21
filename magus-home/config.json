@@ -1,0 +1,14 @@
+{
+  "PersonaFile": "personas/persona1.md",
+  "MemoryFile": "memory/conversation.jsonl",
+  "MemoryMaxMessages": 24,
+
+  "OllamaBaseUrl": "http://127.0.0.1:11434",
+  "OllamaModel": "qwen2.5:7b",
+
+  "LmStudioBaseUrl": "http://127.0.0.1:1234/v1",
+
+  "OpenAIBaseUrl": "https://api.openai.com/v1",
+  "OpenAIModel": "gpt-4o-mini",
+  "OpenAIApiKeyEnv": "OPENAI_API_KEY"
+}

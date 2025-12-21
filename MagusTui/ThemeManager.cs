@@ -1,6 +1,7 @@
 
 using System.Text.Json;
 using Terminal.Gui;
+using MagusTui.Config;
 
 namespace MagusTui;
 
@@ -17,19 +18,27 @@ public sealed class ThemeManager
         _themes.Clear();
 
         var baseDir = AppContext.BaseDirectory;
-        var themePath = Path.Combine(baseDir, "Themes");
+        var builtIn = Path.Combine(baseDir, "Themes");
+        var community = MagusHome.ThemesDir;
 
-        if (!Directory.Exists(themePath))
-            return;
+        var files = new List<string>();
+        if (Directory.Exists(builtIn))
+            files.AddRange(Directory.GetFiles(builtIn, "*.json"));
+        if (Directory.Exists(community))
+            files.AddRange(Directory.GetFiles(community, "*.json"));
 
-        foreach (var file in Directory.GetFiles(themePath, "*.json").OrderBy(f => f))
+        foreach (var file in files.OrderBy(f => f))
         {
             try
             {
                 var json = File.ReadAllText(file);
                 var spec = JsonSerializer.Deserialize<ThemeSpec>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 if (spec != null && !string.IsNullOrWhiteSpace(spec.Name))
+                {
+                    // Prefer later entries (community) if name collides
+                    _themes.RemoveAll(t => t.Name.Equals(spec.Name, StringComparison.OrdinalIgnoreCase));
                     _themes.Add(spec);
+                }
             }
             catch
             {

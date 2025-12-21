@@ -1,0 +1,23 @@
+{
+  "name": "Paper",
+  "base": {
+    "fg": "Black",
+    "bg": "White"
+  },
+  "accent": {
+    "fg": "Blue",
+    "bg": "White"
+  },
+  "hot": {
+    "fg": "Red",
+    "bg": "White"
+  },
+  "status": {
+    "fg": "Black",
+    "bg": "White"
+  },
+  "disabled": {
+    "fg": "Gray",
+    "bg": "White"
+  }
+}

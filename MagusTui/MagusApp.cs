@@ -1,6 +1,7 @@
 
 using System.Text;
 using Terminal.Gui;
+using MagusTui.Config;
 
 namespace MagusTui;
 
@@ -10,6 +11,12 @@ public sealed class MagusApp
     private readonly BackendManager _backend;
     private readonly ModeManager _modes;
     private readonly CommandRegistry _commands;
+    private readonly MagusConfig _config;
+    private readonly MemoryStore _memory;
+    private readonly List<PersonaInfo> _personas;
+    private string _personaName;
+    private string _personaText;
+    private string _personaPath;
 
     private Window? _main;
     private StatusBar? _status;
@@ -33,8 +40,17 @@ public sealed class MagusApp
 
     public MagusApp()
     {
+        _config = MagusConfig.LoadOrCreate();
+        _personas = PersonaManager.ListPersonas().ToList();
+
+        var initialPersona = SelectInitialPersona();
+        _personaPath = initialPersona.RelativePath;
+        _personaName = initialPersona.DisplayName;
+        _personaText = PersonaManager.LoadPersonaText(_personaPath);
+
+        _memory = new MemoryStore(_config);
         _themes = new ThemeManager();
-        _backend = new BackendManager();
+        _backend = new BackendManager(_config);
         _modes = new ModeManager();
         _commands = new CommandRegistry();
     }
@@ -107,6 +123,7 @@ public sealed class MagusApp
             themes: _themes,
             backend: _backend,
             modes: _modes,
+            personas: BuildPersonaMenuItems(),
             onThemeChanged: () => { _themes.ApplyCurrent(); RefreshStatus(); Log($"Theme: {_themes.CurrentName}"); },
             onBackendChanged: () => { RefreshStatus(); Log($"Backend: {_backend.CurrentName}"); },
             onModeChanged: () => { RefreshStatus(); Log($"Mode: {_modes.CurrentName}"); },
@@ -139,7 +156,7 @@ public sealed class MagusApp
 
         _logs = new LogPane();
         _notes = new NotesWorkspace(_logs);
-        _chat = new ChatPane(_logs, _backend, _modes);
+        _chat = new ChatPane(_logs, _backend, _modes, _memory, _config, _personaName, _personaText);
         _search = new SearchPane(_logs);
 
         _chatTab = new TabView.Tab("Chat", _chat.View);
@@ -151,6 +168,11 @@ public sealed class MagusApp
         _tabs.AddTab(_searchTab, false);
         _tabs.AddTab(_notesTab, false);
         _tabs.AddTab(_logsTab, false);
+
+        _tabs.SelectedTabChanged += (_, args) =>
+        {
+            if (args.NewTab == _chatTab) _chat?.FocusInput();
+        };
 
         _main.Add(left, _tabs);
 
@@ -168,6 +190,15 @@ public sealed class MagusApp
 
         // Register commands for palette
         RegisterCommands();
+
+        _chat?.FocusInput();
+    }
+
+    private MenuItem[] BuildPersonaMenuItems()
+    {
+        return _personas
+            .Select(p => new MenuItem(p.DisplayName, "", () => SetPersona(p)))
+            .ToArray();
     }
 
     private void WireGlobalKeys()
@@ -184,7 +215,7 @@ public sealed class MagusApp
 
     private void RegisterCommands()
     {
-        _commands.Add("Switch Tab: Chat", "tabs.chat", () => { if (_chatTab != null) _tabs!.SelectedTab = _chatTab; });
+        _commands.Add("Switch Tab: Chat", "tabs.chat", () => { if (_chatTab != null) { _tabs!.SelectedTab = _chatTab; _chat!.FocusInput(); } });
         _commands.Add("Switch Tab: Search", "tabs.search", () => { if (_searchTab != null) _tabs!.SelectedTab = _searchTab; });
         _commands.Add("Switch Tab: Notes", "tabs.notes", () => { if (_notesTab != null) _tabs!.SelectedTab = _notesTab; });
         _commands.Add("Switch Tab: Logs", "tabs.logs", () => { if (_logsTab != null) _tabs!.SelectedTab = _logsTab; });
@@ -201,6 +232,12 @@ public sealed class MagusApp
 
         _commands.Add("Help", "help", () => ShowHelp());
         _commands.Add("Quit", "quit", () => Application.RequestStop());
+    }
+
+    private PersonaInfo SelectInitialPersona()
+    {
+        var match = _personas.FirstOrDefault(p => p.RelativePath.Equals(_config.PersonaFile, StringComparison.OrdinalIgnoreCase));
+        return match ?? _personas.First();
     }
 
     private void ShowPalette()
@@ -220,6 +257,16 @@ public sealed class MagusApp
         {
             Log($"Unknown command: {id}");
         }
+    }
+
+    private void SetPersona(PersonaInfo persona)
+    {
+        _personaPath = persona.RelativePath;
+        _personaName = persona.DisplayName;
+        _personaText = PersonaManager.LoadPersonaText(_personaPath);
+        _config.PersonaFile = _personaPath;
+        _chat?.SetPersona(_personaName, _personaText);
+        Log($"Persona: {_personaName}");
     }
 
     private void ShowHelp()

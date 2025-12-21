@@ -1,0 +1,23 @@
+{
+  "name": "Monochrome",
+  "base": {
+    "fg": "White",
+    "bg": "Black"
+  },
+  "accent": {
+    "fg": "White",
+    "bg": "Black"
+  },
+  "hot": {
+    "fg": "White",
+    "bg": "Black"
+  },
+  "status": {
+    "fg": "White",
+    "bg": "Black"
+  },
+  "disabled": {
+    "fg": "Gray",
+    "bg": "Black"
+  }
+}
