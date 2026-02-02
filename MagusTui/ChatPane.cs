@@ -19,6 +19,13 @@ public sealed class ChatPane
     private readonly TextView _output;
     private readonly TextField _input;
     private readonly Button _send;
+    private readonly FrameView _thinkingOverlay;
+    private readonly Label _thinkingLabel;
+    private readonly string[] _spinnerFrames = new[] { "|", "/", "-", "\\" };
+    private int _spinnerIndex;
+    private bool _isBusy;
+    private bool _spinnerActive;
+    private string? _lastWho;
 
     public View Root { get; }
     public View View => Root;
@@ -74,7 +81,27 @@ public sealed class ChatPane
             }
         };
 
-        Root.Add(_output, _input, _send);
+        _thinkingLabel = new Label("Thinking |")
+        {
+            X = 1,
+            Y = 0,
+            Width = Dim.Fill() - 2,
+            Height = 1,
+            TextAlignment = TextAlignment.Centered
+        };
+
+        _thinkingOverlay = new FrameView("Thinking")
+        {
+            X = Pos.Center(),
+            Y = Pos.Center() - 1,
+            Width = 26,
+            Height = 3,
+            Visible = false,
+            CanFocus = false
+        };
+        _thinkingOverlay.Add(_thinkingLabel);
+
+        Root.Add(_output, _input, _send, _thinkingOverlay);
 
         // Load memory and greet
         foreach (var m in _memory.LoadRecent(_config.MemoryMaxMessages))
@@ -140,14 +167,51 @@ public sealed class ChatPane
     {
         var line = $"{who}: {text}";
         if (!line.EndsWith("\n")) line += "\n";
-        _output.Text = (_output.Text?.ToString() ?? "") + line;
+        var current = _output.Text?.ToString() ?? "";
+        if (_lastWho == "You" && who == "Tara" && !current.EndsWith("\n\n"))
+            current += "\n";
+        _output.Text = current + line;
+        _lastWho = who;
         _output.MoveEnd();
     }
 
     private void SetBusy(bool busy)
     {
+        _isBusy = busy;
         _send.Enabled = !busy;
         _input.Enabled = !busy;
+        _thinkingOverlay.Visible = busy;
+
+        if (busy)
+        {
+            _spinnerIndex = 0;
+            UpdateSpinnerText();
+            StartSpinner();
+        }
+    }
+
+    private void StartSpinner()
+    {
+        if (_spinnerActive) return;
+
+        _spinnerActive = true;
+        Application.MainLoop.AddTimeout(TimeSpan.FromMilliseconds(120), _ =>
+        {
+            if (!_isBusy)
+            {
+                _spinnerActive = false;
+                return false;
+            }
+
+            _spinnerIndex = (_spinnerIndex + 1) % _spinnerFrames.Length;
+            UpdateSpinnerText();
+            return true;
+        });
+    }
+
+    private void UpdateSpinnerText()
+    {
+        _thinkingLabel.Text = $"Thinking {_spinnerFrames[_spinnerIndex]}";
     }
 
     public void SetPersona(string personaName, string personaText)
