@@ -25,7 +25,6 @@ public sealed class ChatPane
     private int _spinnerIndex;
     private bool _isBusy;
     private bool _spinnerActive;
-    private string? _lastWho;
 
     public View Root { get; }
     public View View => Root;
@@ -167,11 +166,9 @@ public sealed class ChatPane
     {
         var line = $"{who}: {text}";
         if (!line.EndsWith("\n")) line += "\n";
-        var current = _output.Text?.ToString() ?? "";
-        if (_lastWho == "You" && who == "Tara" && !current.EndsWith("\n\n"))
-            current += "\n";
-        _output.Text = current + line;
-        _lastWho = who;
+        if ((who == "You" || who == "Tara") && !line.EndsWith("\n\n"))
+            line += "\n";
+        _output.Text = (_output.Text?.ToString() ?? "") + line;
         _output.MoveEnd();
     }
 
