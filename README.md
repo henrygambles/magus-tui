@@ -31,4 +31,4 @@ Theme JSON lives in `Themes/*.json` and is copied to the output directory on bui
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=henrygambles/magus-tui&type=Date)](https://star-history.com/#henrygambles/magus-tui&Date)
+![Star history](.github/star-history.svg)
